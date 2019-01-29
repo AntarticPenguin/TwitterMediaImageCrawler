@@ -7,6 +7,17 @@
 이 프로그램은 트위터 미디어 탭에 있는 이미지를 크롤링하기 위한 프로그램입니다.  
 This program crawls Twitter Media tab's images.
 
+# TwitterMediaCrawler V1.1
+이제 다운로드 도중에 창을 움직일 수 있습니다.
+You can move program's window while downloading.
+
+프로그램을 실행시 마지막 위치에서 실행됩니다.
+Program open on last closed position.
+
+버그 수정
+간혹 다운로드 이미지 순서(오래된 트윗에서 최신순)가 안맞는 경우가 있었습니다. 이 부분을 수정하였습니다.
+- Sometimes download's order(oldest to newest) is wrong. Because of image's file size. Fixed it.
+
 ## Description
 숨겨진 트윗 이미지를 다운로드 하기 위해서는 로그인이 필요합니다. 아이디 비밀번호는 저장되지 않습니다.  
 Need to login for hidden twit's image about NSFW. Id, password not save.
