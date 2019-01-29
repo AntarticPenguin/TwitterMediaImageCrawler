@@ -12,7 +12,6 @@ using System.Drawing;
 using System.IO;
 using TwitterCrawler;
 
-
 public class TwitCrawler
 {
 	Form1 _windowForm;
@@ -27,7 +26,12 @@ public class TwitCrawler
 	public void StartCrawling(string url, string id, string password)
 	{
 		_windowForm.AppendLogLine("Start Crawling");
+		Thread thread = new Thread(() => CrawlAsync(url, id, password));
+		thread.Start();
+	}
 
+	async void CrawlAsync(string url, string id, string password)
+	{
 		var chromeDriverService = ChromeDriverService.CreateDefaultService();
 		chromeDriverService.HideCommandPromptWindow = true;
 		_driver = new ChromeDriver(chromeDriverService);
@@ -39,7 +43,7 @@ public class TwitCrawler
 		LoginTwitter(id, password);
 
 		LoadDynamicContents();
-		DownloadContentsImage();
+		await DownloadContentsImageAsync();
 
 		_driver.Close();
 		_driver.Quit();
@@ -71,9 +75,11 @@ public class TwitCrawler
 		while(true)
 		{
 			var loadContents = _driver.FindElementsByXPath(".//*[@id='timeline']/div/div[2]/ol[1]/li");
-			_windowForm.AppendLogLine("content Count: " + loadContents.Count);
 			if (count == loadContents.Count)
+			{
+				_windowForm.AppendLogLine("content Count: " + loadContents.Count);
 				break;
+			}
 
 			for(int i = count; i < loadContents.Count; i++)
 			{
@@ -89,7 +95,7 @@ public class TwitCrawler
 		}
 	}
 
-	void DownloadContentsImage()
+	async Task DownloadContentsImageAsync()
 	{
 		_windowForm.AppendLogLine("Start DownloadImage");
 
@@ -109,22 +115,24 @@ public class TwitCrawler
 					foreach (var img in imgList)
 					{
 						string imgSrc = img.GetAttribute("src");
-						_windowForm.AppendLogLine("Image Src: " + imgSrc);
 
 						int first = imgSrc.IndexOf("media") + "media/".Length;
 						int last = imgSrc.Length - first;
 						string fileName = imgSrc.Substring(first, last);
 						string finalPath = Path.Combine(_windowForm.GetDirectoryPath(), fileName);
-						
-						webClient.DownloadFileAsync(new Uri(imgSrc), finalPath);
-						Thread.Sleep(150);
+
+						string orignalImageSrc = imgSrc + ":orig";
+						_windowForm.AppendLogLine("Image Src: " + orignalImageSrc);
+
+						//webClient.DownloadFile(new Uri(orignalImageSrc), finalPath);
+						await webClient.DownloadFileTaskAsync(new Uri(orignalImageSrc), finalPath);
 						totalCount++;
 					}
 				}
 			}
 			catch (Exception exception)
 			{
-				//Console.WriteLine("Error: {0}", exception);
+				Console.WriteLine("Error: {0}", exception);
 				_windowForm.AppendLogLine("This link maybe not Image or just thumbnail of video");
 			}
 		}

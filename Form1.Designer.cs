@@ -46,7 +46,7 @@
 			this.url_textBox.Location = new System.Drawing.Point(117, 84);
 			this.url_textBox.Name = "url_textBox";
 			this.url_textBox.Size = new System.Drawing.Size(563, 21);
-			this.url_textBox.TabIndex = 0;
+			this.url_textBox.TabIndex = 4;
 			this.url_textBox.TextChanged += new System.EventHandler(this.url_textBox_TextChanged);
 			// 
 			// url_label
@@ -74,7 +74,7 @@
 			this.id_textBox.Location = new System.Drawing.Point(90, 26);
 			this.id_textBox.Name = "id_textBox";
 			this.id_textBox.Size = new System.Drawing.Size(164, 21);
-			this.id_textBox.TabIndex = 3;
+			this.id_textBox.TabIndex = 0;
 			this.id_textBox.TextChanged += new System.EventHandler(this.id_textBox_TextChanged);
 			// 
 			// pw_label
@@ -92,7 +92,7 @@
 			this.pw_textBox.Location = new System.Drawing.Point(366, 26);
 			this.pw_textBox.Name = "pw_textBox";
 			this.pw_textBox.Size = new System.Drawing.Size(100, 21);
-			this.pw_textBox.TabIndex = 5;
+			this.pw_textBox.TabIndex = 1;
 			this.pw_textBox.UseSystemPasswordChar = true;
 			// 
 			// startButton
@@ -100,7 +100,7 @@
 			this.startButton.Location = new System.Drawing.Point(704, 82);
 			this.startButton.Name = "startButton";
 			this.startButton.Size = new System.Drawing.Size(75, 23);
-			this.startButton.TabIndex = 6;
+			this.startButton.TabIndex = 5;
 			this.startButton.Text = "Start";
 			this.startButton.UseVisualStyleBackColor = true;
 			this.startButton.Click += new System.EventHandler(this.startButton_Click);
@@ -113,7 +113,7 @@
 			this.log_textBox.ReadOnly = true;
 			this.log_textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.log_textBox.Size = new System.Drawing.Size(763, 320);
-			this.log_textBox.TabIndex = 7;
+			this.log_textBox.TabIndex = 6;
 			// 
 			// directory_label
 			// 
@@ -129,14 +129,14 @@
 			this.directory_textBox.Location = new System.Drawing.Point(91, 56);
 			this.directory_textBox.Name = "directory_textBox";
 			this.directory_textBox.Size = new System.Drawing.Size(375, 21);
-			this.directory_textBox.TabIndex = 9;
+			this.directory_textBox.TabIndex = 2;
 			// 
 			// selectDirectoryButton
 			// 
 			this.selectDirectoryButton.Location = new System.Drawing.Point(476, 56);
 			this.selectDirectoryButton.Name = "selectDirectoryButton";
 			this.selectDirectoryButton.Size = new System.Drawing.Size(92, 20);
-			this.selectDirectoryButton.TabIndex = 10;
+			this.selectDirectoryButton.TabIndex = 3;
 			this.selectDirectoryButton.Text = "Choose";
 			this.selectDirectoryButton.UseVisualStyleBackColor = true;
 			this.selectDirectoryButton.Click += new System.EventHandler(this.selectDirectoryButton_Click);
@@ -158,7 +158,8 @@
 			this.Controls.Add(this.url_label);
 			this.Controls.Add(this.url_textBox);
 			this.Name = "Form1";
-			this.Text = "TwitterMediaCrawlerV1.0";
+			this.Text = "TwitterMediaCrawlerV1.1";
+			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_Closing);
 			this.Load += new System.EventHandler(this.Form1_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
