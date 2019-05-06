@@ -17,6 +17,11 @@ public class TwitCrawler
 	Form1 _windowForm;
 	ChromeDriver _driver;
 	List<IWebElement> _contentsList;
+	string _lang = "ko";
+	int _fromYear;
+	int _fromMonth;
+	int _toYear;
+	int _toMonth;
 
 	public void Init(Form1 form)
 	{
@@ -25,9 +30,17 @@ public class TwitCrawler
 
 	public void StartCrawling(string url, string id, string password)
 	{
-		_windowForm.AppendLogLine("Start Crawling");
+		WriteLog("Start Crawling");
 		Thread thread = new Thread(() => CrawlAsync(url, id, password));
 		thread.Start();
+	}
+
+	public void InitRange(int fromYear, int fromMonth, int toYear, int toMonth)
+	{
+		_fromYear = fromYear;
+		_fromMonth = fromMonth;
+		_toYear = toYear;
+		_toMonth = toMonth;
 	}
 
 	async void CrawlAsync(string url, string id, string password)
@@ -36,10 +49,15 @@ public class TwitCrawler
 		chromeDriverService.HideCommandPromptWindow = true;
 		_driver = new ChromeDriver(chromeDriverService);
 
-		_windowForm.AppendLogLine("URL: " + url);
+		if(false == url.Contains("/media"))
+		{
+			WriteLog("Add url /media");
+			url += "/media";
+		}
+		WriteLog("URL: " + url);
 		_driver.Navigate().GoToUrl(url);
 
-		_windowForm.AppendLogLine("LoginTwitter: " + id);
+		WriteLog("LoginTwitter: " + id);
 		LoginTwitter(id, password);
 
 		LoadDynamicContents();
@@ -65,39 +83,54 @@ public class TwitCrawler
 
 	void LoadDynamicContents()
 	{
-		_windowForm.AppendLogLine("Checking Contents.....");
+		_lang = _driver.FindElementByXPath("/html").GetAttribute("lang");
+		WriteLog("Detecting Language: " + _lang);
+		WriteLog("Checking Contents.....");
 
 		//.//div/div/div[3] => div class AdaptiveMediaOuterContatiner
 
 		_contentsList = new List<IWebElement>();
 
 		int count = 0;
+		bool stop = false;
 		while(true)
 		{
 			var loadContents = _driver.FindElementsByXPath(".//*[@id='timeline']/div/div[2]/ol[1]/li");
 			if (count == loadContents.Count)
 			{
-				_windowForm.AppendLogLine("content Count: " + loadContents.Count);
+				WriteLog("content Count: " + loadContents.Count);
 				break;
 			}
 
-			for(int i = count; i < loadContents.Count; i++)
+			for (int i = count; i < loadContents.Count; i++)
 			{
-				_contentsList.Add(loadContents[i]);
-				count++;
+				var date = loadContents[i].FindElement(By.ClassName("time")).Text;
+				if (stop = StopCheckingDate(date))
+				{
+					WriteLog("STOP CHECKING");
+					break;
+				}
+
+				if (CheckDateRange(date))
+				{
+					_contentsList.Add(loadContents[i]);
+					count++;
+				}
 			}
+
+			if (stop)
+				break;
 
 			Actions action = new Actions(_driver);
 			action.MoveToElement(_contentsList[count - 1]).Perform();
-
-			//_driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2); //not working why?
+			
 			Thread.Sleep(1500);
 		}
 	}
 
 	async Task DownloadContentsImageAsync()
 	{
-		_windowForm.AppendLogLine("Start DownloadImage");
+		WriteLog("Start DownloadImage");
 
 		int totalCount = 0;
 		WebClient webClient = new WebClient();
@@ -122,21 +155,92 @@ public class TwitCrawler
 						string finalPath = Path.Combine(_windowForm.GetDirectoryPath(), fileName);
 
 						string orignalImageSrc = imgSrc + ":orig";
-						_windowForm.AppendLogLine("Image Src: " + orignalImageSrc);
+						WriteLog("Image Src: " + orignalImageSrc);
 
-						//webClient.DownloadFile(new Uri(orignalImageSrc), finalPath);
-						await webClient.DownloadFileTaskAsync(new Uri(orignalImageSrc), finalPath);
-						totalCount++;
+						if(!File.Exists(finalPath))
+						{
+							await webClient.DownloadFileTaskAsync(new Uri(orignalImageSrc), finalPath);
+							totalCount++;
+						}
+						else
+						{
+							WriteLog("File already exists.");
+						}
 					}
 				}
 			}
 			catch (Exception exception)
 			{
 				Console.WriteLine("Error: {0}", exception);
-				_windowForm.AppendLogLine("This link maybe not Image or just thumbnail of video");
+				WriteLog("This link maybe not Image or just thumbnail of video");
 			}
 		}
-		_windowForm.AppendLogLine("Finish Download. Total Image: " + totalCount);
+		WriteLog("Finish Download. Total Image: " + totalCount);
 		webClient.Dispose();
+	}
+
+	void WriteLog(string log)
+	{
+		_windowForm.AppendLogLine(log);
+	}
+
+	bool CheckDateRange(string InDate)
+	{
+		if (_lang.Equals("ko"))
+		{
+			string[] date = InDate.Split('년', '월');
+			if(date.Length == 2)
+			{
+				int year = DateTime.Now.Year;
+				int month = int.Parse(date[0]);
+
+				if (_fromYear < year && year < _toYear)
+					return true;
+				else if ((_fromYear == year || year == _toYear) && month <= _toMonth)
+					return true;
+			}
+			else if(date.Length == 3)
+			{
+				WriteLog("YYMM");
+				int year = int.Parse(date[0]);
+				int month = int.Parse(date[1]);
+
+				if (_fromYear < year && year < _toYear)
+					return true;
+				else if ((_fromYear == year || year == _toYear) && month <= _toMonth)
+					return true;
+			}
+		}
+		WriteLog("Skip");
+		return false;
+	}
+
+	bool StopCheckingDate(string InDate)
+	{
+		if (_lang.Equals("ko"))
+		{
+			string[] date = InDate.Split('년', '월');
+			if (date.Length == 2)
+			{
+				int year = DateTime.Now.Year;
+				int month = int.Parse(date[0]);
+
+				if (year < _fromYear)
+					return true;
+				else if ((year == _fromYear) && month < _fromMonth)
+					return true;
+			}
+			else if (date.Length == 3)
+			{
+				int year = int.Parse(date[0]);
+				int month = int.Parse(date[1]);
+
+				if (year < _fromYear)
+					return true;
+				else if ((year == _fromYear) && month < _fromMonth)
+					return true;
+			}
+		}
+		return false;
 	}
 }

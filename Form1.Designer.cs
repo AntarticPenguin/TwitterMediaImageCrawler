@@ -39,21 +39,27 @@
 			this.directory_label = new System.Windows.Forms.Label();
 			this.directory_textBox = new System.Windows.Forms.TextBox();
 			this.selectDirectoryButton = new System.Windows.Forms.Button();
+			this.fromLabel = new System.Windows.Forms.Label();
+			this.toLabel = new System.Windows.Forms.Label();
+			this.comboBox_FromMonth = new System.Windows.Forms.ComboBox();
+			this.comboBox_FromYear = new System.Windows.Forms.ComboBox();
+			this.comboBox_ToYear = new System.Windows.Forms.ComboBox();
+			this.comboBox_ToMonth = new System.Windows.Forms.ComboBox();
 			this.SuspendLayout();
 			// 
 			// url_textBox
 			// 
-			this.url_textBox.Location = new System.Drawing.Point(117, 84);
+			this.url_textBox.Location = new System.Drawing.Point(117, 117);
 			this.url_textBox.Name = "url_textBox";
 			this.url_textBox.Size = new System.Drawing.Size(563, 21);
-			this.url_textBox.TabIndex = 4;
+			this.url_textBox.TabIndex = 6;
 			this.url_textBox.TextChanged += new System.EventHandler(this.url_textBox_TextChanged);
 			// 
 			// url_label
 			// 
 			this.url_label.AutoSize = true;
 			this.url_label.Font = new System.Drawing.Font("굴림", 14F);
-			this.url_label.Location = new System.Drawing.Point(12, 86);
+			this.url_label.Location = new System.Drawing.Point(12, 119);
 			this.url_label.Name = "url_label";
 			this.url_label.Size = new System.Drawing.Size(99, 19);
 			this.url_label.TabIndex = 1;
@@ -97,22 +103,22 @@
 			// 
 			// startButton
 			// 
-			this.startButton.Location = new System.Drawing.Point(704, 82);
+			this.startButton.Location = new System.Drawing.Point(704, 115);
 			this.startButton.Name = "startButton";
 			this.startButton.Size = new System.Drawing.Size(75, 23);
-			this.startButton.TabIndex = 5;
+			this.startButton.TabIndex = 7;
 			this.startButton.Text = "Start";
 			this.startButton.UseVisualStyleBackColor = true;
 			this.startButton.Click += new System.EventHandler(this.startButton_Click);
 			// 
 			// log_textBox
 			// 
-			this.log_textBox.Location = new System.Drawing.Point(16, 118);
+			this.log_textBox.Location = new System.Drawing.Point(16, 152);
 			this.log_textBox.Multiline = true;
 			this.log_textBox.Name = "log_textBox";
 			this.log_textBox.ReadOnly = true;
 			this.log_textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.log_textBox.Size = new System.Drawing.Size(763, 320);
+			this.log_textBox.Size = new System.Drawing.Size(763, 286);
 			this.log_textBox.TabIndex = 6;
 			// 
 			// directory_label
@@ -141,11 +147,102 @@
 			this.selectDirectoryButton.UseVisualStyleBackColor = true;
 			this.selectDirectoryButton.Click += new System.EventHandler(this.selectDirectoryButton_Click);
 			// 
+			// fromLabel
+			// 
+			this.fromLabel.AutoSize = true;
+			this.fromLabel.Location = new System.Drawing.Point(19, 92);
+			this.fromLabel.Name = "fromLabel";
+			this.fromLabel.Size = new System.Drawing.Size(34, 12);
+			this.fromLabel.TabIndex = 10;
+			this.fromLabel.Text = "From";
+			this.fromLabel.Click += new System.EventHandler(this.fromLabel_Click);
+			// 
+			// toLabel
+			// 
+			this.toLabel.AutoSize = true;
+			this.toLabel.Location = new System.Drawing.Point(257, 92);
+			this.toLabel.Name = "toLabel";
+			this.toLabel.Size = new System.Drawing.Size(20, 12);
+			this.toLabel.TabIndex = 11;
+			this.toLabel.Text = "To";
+			// 
+			// comboBox_FromMonth
+			// 
+			this.comboBox_FromMonth.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_FromMonth.FormattingEnabled = true;
+			this.comboBox_FromMonth.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12"});
+			this.comboBox_FromMonth.Location = new System.Drawing.Point(161, 89);
+			this.comboBox_FromMonth.Name = "comboBox_FromMonth";
+			this.comboBox_FromMonth.Size = new System.Drawing.Size(57, 20);
+			this.comboBox_FromMonth.TabIndex = 12;
+			this.comboBox_FromMonth.SelectedIndexChanged += new System.EventHandler(this.comboBox_FromMonth_SelectedIndexChanged);
+			// 
+			// comboBox_FromYear
+			// 
+			this.comboBox_FromYear.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_FromYear.FormattingEnabled = true;
+			this.comboBox_FromYear.Location = new System.Drawing.Point(91, 89);
+			this.comboBox_FromYear.Name = "comboBox_FromYear";
+			this.comboBox_FromYear.Size = new System.Drawing.Size(64, 20);
+			this.comboBox_FromYear.TabIndex = 13;
+			this.comboBox_FromYear.SelectedIndexChanged += new System.EventHandler(this.comboBox_FromYear_SelectedIndexChanged);
+			// 
+			// comboBox_ToYear
+			// 
+			this.comboBox_ToYear.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_ToYear.FormattingEnabled = true;
+			this.comboBox_ToYear.Location = new System.Drawing.Point(287, 89);
+			this.comboBox_ToYear.Name = "comboBox_ToYear";
+			this.comboBox_ToYear.Size = new System.Drawing.Size(64, 20);
+			this.comboBox_ToYear.TabIndex = 14;
+			this.comboBox_ToYear.SelectedIndexChanged += new System.EventHandler(this.comboBox_ToYear_SelectedIndexChanged);
+			// 
+			// comboBox_ToMonth
+			// 
+			this.comboBox_ToMonth.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_ToMonth.FormattingEnabled = true;
+			this.comboBox_ToMonth.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12"});
+			this.comboBox_ToMonth.Location = new System.Drawing.Point(357, 89);
+			this.comboBox_ToMonth.Name = "comboBox_ToMonth";
+			this.comboBox_ToMonth.Size = new System.Drawing.Size(57, 20);
+			this.comboBox_ToMonth.TabIndex = 15;
+			this.comboBox_ToMonth.SelectedIndexChanged += new System.EventHandler(this.comboBox_ToMonth_SelectedIndexChanged);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 450);
+			this.Controls.Add(this.comboBox_ToMonth);
+			this.Controls.Add(this.comboBox_ToYear);
+			this.Controls.Add(this.comboBox_FromYear);
+			this.Controls.Add(this.comboBox_FromMonth);
+			this.Controls.Add(this.toLabel);
+			this.Controls.Add(this.fromLabel);
 			this.Controls.Add(this.selectDirectoryButton);
 			this.Controls.Add(this.directory_textBox);
 			this.Controls.Add(this.directory_label);
@@ -179,6 +276,12 @@
 		private System.Windows.Forms.Label directory_label;
 		private System.Windows.Forms.TextBox directory_textBox;
 		private System.Windows.Forms.Button selectDirectoryButton;
+		private System.Windows.Forms.Label fromLabel;
+		private System.Windows.Forms.Label toLabel;
+		private System.Windows.Forms.ComboBox comboBox_FromMonth;
+		private System.Windows.Forms.ComboBox comboBox_FromYear;
+		private System.Windows.Forms.ComboBox comboBox_ToYear;
+		private System.Windows.Forms.ComboBox comboBox_ToMonth;
 	}
 }
 
