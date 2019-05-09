@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace TwitterCrawler
 {
@@ -34,6 +35,8 @@ namespace TwitterCrawler
 			comboBox_FromMonth.SelectedIndex = 0;
 			comboBox_ToYear.SelectedIndex = comboBox_ToYear.Items.Count - 1;
 			comboBox_ToMonth.SelectedIndex = comboBox_ToMonth.Items.Count - 1;
+
+			_bDontNeedLogIn = false;
 		}
 
 		void LoadConfig()
@@ -91,6 +94,44 @@ namespace TwitterCrawler
 			}
 		}
 
+		//const int sizeGrip = 16;
+		//protected override void WndProc(ref Message m)
+		//{
+		//	/*
+		//	 * 0x84 = WM_NCHITTEST - Mouse Capture Test
+		//	 * 0x1 = HTCLIENT - Application Client Area
+		//	 * 0x2 = HTCAPTION - Application Title Bar
+		//	 */
+		//	 //sizing
+		//	if(m.Msg == 0x84)
+		//	{
+		//		Point pos = new Point(m.LParam.ToInt32());
+		//		pos = PointToClient(pos);
+		//		if(pos.X >= ClientSize.Width - sizeGrip && pos.Y >= ClientSize.Height - sizeGrip)
+		//		{
+		//			m.Result = (IntPtr)17;
+		//			return;
+		//		}
+		//	}
+		//	base.WndProc(ref m);
+		//}
+
+		public const int WM_NCLBUTTONDOWN = 0x00A1;
+		public const int HT_CAPTION = 0x2;
+
+		[DllImportAttribute("user32.dll")]
+		public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+		[DllImportAttribute("user32.dll")]
+		public static extern bool ReleaseCapture();
+		private void titlePanel_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				ReleaseCapture();
+				SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+			}
+		}
+
 		#region EVENT
 
 		private void Form1_Load(object sender, EventArgs e)
@@ -104,16 +145,6 @@ namespace TwitterCrawler
 			Properties.Settings.Default.Save();
 		}
 
-		private void url_textBox_TextChanged(object sender, EventArgs e)
-		{
-
-		}
-
-		private void pw_label_Click(object sender, EventArgs e)
-		{
-
-		}
-
 		private void startButton_Click(object sender, EventArgs e)
 		{
 			string url = url_textBox.Text;
@@ -124,55 +155,59 @@ namespace TwitterCrawler
 			int toYear = int.Parse(comboBox_ToYear.Text);
 			int toMonth = int.Parse(comboBox_ToMonth.Text);
 
-			TwitCrawler crawler = new TwitCrawler();
-			crawler.Init(this);
-			crawler.InitRange(fromYear, fromMonth, toYear, toMonth);
-			crawler.StartCrawling(url, id, pw);
-		}
-
-		private void id_textBox_TextChanged(object sender, EventArgs e)
-		{
-
-		}
-
-		private void url_label_Click(object sender, EventArgs e)
-		{
-
+			if (url.Equals(""))
+			{
+				AppendLogLine("Please Enter Twitter URL");
+			}
+			else
+			{
+				TwitCrawler crawler = new TwitCrawler();
+				crawler.Init(this);
+				crawler.InitRange(fromYear, fromMonth, toYear, toMonth);
+				crawler.StartCrawling(url, id, pw, _bDontNeedLogIn);
+			}
 		}
 
 		private void selectDirectoryButton_Click(object sender, EventArgs e)
 		{
 			FolderBrowserDialog dialog = new FolderBrowserDialog();
-			dialog.ShowDialog();
-			string path = dialog.SelectedPath;
-			directory_textBox.Text = path + @"\";
+			DialogResult result = dialog.ShowDialog();
 
-			SaveConfig();
+			if(DialogResult.OK == result)
+			{
+				string path = dialog.SelectedPath;
+				directory_textBox.Text = path + @"\";
+				SaveConfig();
+			}
 		}
 
-		private void fromLabel_Click(object sender, EventArgs e)
+		private void closeBtn_Click(object sender, MouseEventArgs e)
 		{
-
+			DialogResult result = MessageBox.Show("Close TwitCrawler", "CloseBox", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+			if (result == DialogResult.Yes)
+				Close();
 		}
 
-		private void comboBox_FromYear_SelectedIndexChanged(object sender, EventArgs e)
+		private void minimizeBtn_MouseDown(object sender, MouseEventArgs e)
 		{
-			
+			WindowState = FormWindowState.Minimized;
 		}
 
-		private void comboBox_FromMonth_SelectedIndexChanged(object sender, EventArgs e)
+		bool _bDontNeedLogIn;
+		private void logIn_CheckBox_CheckedChanged(object sender, EventArgs e)
 		{
-
-		}
-
-		private void comboBox_ToYear_SelectedIndexChanged(object sender, EventArgs e)
-		{
-
-		}
-
-		private void comboBox_ToMonth_SelectedIndexChanged(object sender, EventArgs e)
-		{
-
+			if (CheckState.Checked == logIn_CheckBox.CheckState)
+			{
+				_bDontNeedLogIn = true;
+				id_textBox.Enabled = false;
+				pw_textBox.Enabled = false;
+			}
+			else
+			{
+				_bDontNeedLogIn = false;
+				id_textBox.Enabled = true;
+				pw_textBox.Enabled = true;
+			}
 		}
 
 		#endregion

@@ -28,10 +28,10 @@ public class TwitCrawler
 		_windowForm = form;
 	}
 
-	public void StartCrawling(string url, string id, string password)
+	public void StartCrawling(string url, string id, string password, bool dontNeedLogIn)
 	{
 		WriteLog("Start Crawling");
-		Thread thread = new Thread(() => CrawlAsync(url, id, password));
+		Thread thread = new Thread(() => CrawlAsync(url, id, password, dontNeedLogIn));
 		thread.Start();
 	}
 
@@ -43,7 +43,7 @@ public class TwitCrawler
 		_toMonth = toMonth;
 	}
 
-	async void CrawlAsync(string url, string id, string password)
+	async void CrawlAsync(string url, string id, string password, bool dontNeedLogIn)
 	{
 		var chromeDriverService = ChromeDriverService.CreateDefaultService();
 		chromeDriverService.HideCommandPromptWindow = true;
@@ -57,8 +57,11 @@ public class TwitCrawler
 		WriteLog("URL: " + url);
 		_driver.Navigate().GoToUrl(url);
 
-		WriteLog("LoginTwitter: " + id);
-		LoginTwitter(id, password);
+		if(!dontNeedLogIn)
+		{
+			WriteLog("LoginTwitter: " + id);
+			LoginTwitter(id, password);
+		}
 
 		LoadDynamicContents();
 		await DownloadContentsImageAsync();
@@ -136,12 +139,12 @@ public class TwitCrawler
 		WebClient webClient = new WebClient();
 
 		_contentsList.Reverse();
-		foreach (var item in _contentsList)
+		for(int index = 0; index < _contentsList.Count; index++)
 		{
 			IReadOnlyCollection<IWebElement> imgList;
 			try
 			{
-				imgList = item.FindElement(By.ClassName("AdaptiveMedia-container")).FindElements(By.TagName("img"));
+				imgList = _contentsList[index].FindElement(By.ClassName("AdaptiveMedia-container")).FindElements(By.TagName("img"));
 
 				if (imgList != null)
 				{
@@ -155,7 +158,7 @@ public class TwitCrawler
 						string finalPath = Path.Combine(_windowForm.GetDirectoryPath(), fileName);
 
 						string orignalImageSrc = imgSrc + ":orig";
-						WriteLog("Image Src: " + orignalImageSrc);
+						WriteLog((index + 1) + ". Image Src: " + orignalImageSrc);
 
 						if(!File.Exists(finalPath))
 						{
@@ -164,7 +167,7 @@ public class TwitCrawler
 						}
 						else
 						{
-							WriteLog("File already exists.");
+							WriteLog((index + 1) + ". File already exists.");
 						}
 					}
 				}
@@ -201,7 +204,9 @@ public class TwitCrawler
 			}
 			else if(date.Length == 3)
 			{
+#if DEBUG
 				WriteLog("YYMM");
+#endif
 				int year = int.Parse(date[0]);
 				int month = int.Parse(date[1]);
 
@@ -211,7 +216,9 @@ public class TwitCrawler
 					return true;
 			}
 		}
+#if DEBUG
 		WriteLog("Skip");
+#endif
 		return false;
 	}
 
